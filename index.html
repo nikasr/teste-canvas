@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Canvas</title>
+</head>
+
+<body>
+    <div>
+        <canvas id="canvas" width="800" height="600">
+        Se você visualizar esse texto, seu browser não suporta a tag canvas.
+        </canvas>
+    </div>
+</body>
+</html>
+
+<script>
+var canvas;//o elemento canvas sobre o qual desenharemos
+var ctx;//o "contexto" da canvas que será utilizado (2D ou 3D)
+var dx = 5;//a tava de variação (velocidade) horizontal do objeto
+var dy = 5;//a tava de variação (velocidade) vertical do objeto
+var x = 250;//posição horizontal do objeto (com valor inicial)
+var y = 100;//posição vertical do objeto (com valor inicial)
+var WIDTH = 800;//largura da área retangular
+var HEIGHT = 600;//altura da área retangular
+var cont = 0; //contatdor do placar
+
+var xbola = 0;
+var ybola = 0;
+
+
+function Desenhar() {
+    ctx.beginPath();
+    //ctx.fillStyle = "blue";
+
+    var my_gradient = ctx.createLinearGradient(0, 0, 250, 205);
+    my_gradient.addColorStop(0, "blue");
+    my_gradient.addColorStop(1, "white");
+    ctx.fillStyle = my_gradient;
+
+    xbola = x;
+    ybola = y;
+
+    ctx.arc(x, y, 50, 0, Math.PI*2, true);
+    ctx.fill();
+}
+
+function LimparTela() {
+    ctx.fillStyle = "white";
+    ctx.strokeStyle = "white";
+    ctx.beginPath();
+    ctx.rect(0, 0, WIDTH, HEIGHT);
+
+    //desenhando as setas horizontais
+    ctx.moveTo(0, 40);
+    ctx.lineTo(240, 40);
+    ctx.moveTo(260, 40);
+    ctx.lineTo(500, 40);
+    ctx.moveTo(495, 35);
+    ctx.lineTo(500, 40);
+    ctx.lineTo(495, 45);
+    ctx.strokeStyle = "blue";
+
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+}
+
+function Placar(){
+ 
+	ctx.font = "bold 12px sans-serif";	
+	ctx.fillStyle = "red";
+
+    //ver porque não está funcionando
+    ctx.textAlign = "right";
+    ctx.textBaseline = "bottom";
+	ctx.fillText('SCORE = '+ cont,535,550);
+}
+
+function Iniciar() {
+    canvas = document.getElementById("canvas");
+    ctx = canvas.getContext("2d");
+    return setInterval(Atualizar, 10);
+}
+
+function KeyDown(evt){
+    switch (evt.keyCode) {
+        case 38:  /*seta para cima */
+            if (y - dy > 0){
+                y -= dy;
+            }
+            break;
+        case 40:  /*set para baixo*/
+            if (y + dy < HEIGHT){
+                y += dy;
+            }
+            break;
+        case 37:  /*set para esquerda*/
+            if (x - dx > 0){
+                x -= dx;
+            }
+            break;
+        case 39:  /*seta para direita*/
+            if (x + dx < WIDTH){
+                x += dx;
+            }
+            break;
+    }
+}
+
+function Atualizar() {
+    LimparTela();    
+    Desenhar();
+    Placar();
+}
+
+function getCursorPosition(e) {
+    var x;
+    var y;
+    
+    //pega as coordenadas do click
+    if (e.pageX != undefined && e.pageY != undefined) {
+        x = e.pageX;
+        y = e.pageY;
+    }
+    else {
+        x = e.clientX + document.body.scrollLeft +
+                document.documentElement.scrollLeft;
+        y = e.clientY + document.body.scrollTop +
+                document.documentElement.scrollTop;
+    }
+    
+    x -= canvas.offsetLeft;
+    y -= canvas.offsetTop;
+
+
+    if ((x >= (xbola-45)) && (x <= (xbola+45))) {
+        if ((y >= (ybola-45)) && (y <= (ybola+45))) {
+            cont++;
+        }
+    }
+    
+}
+
+
+window.addEventListener("click", getCursorPosition, true);
+//window.addEventListener('Keydown', KeyDown, true);
+Iniciar();
+</script>
